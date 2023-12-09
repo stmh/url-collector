@@ -6,7 +6,7 @@ a small cli utility that collects all urls from one (hierarchical) sitemap and o
 
 
 1. Make sure, you have the rust and cargo tooling installed
-2. Run `cargo install --git ssh://git@source.factorial.io:2222/shuber/url-collector.git`
+2. Run `cargo install --git https://github.com/stmh/url-collector.git`
 
 Or 
 
