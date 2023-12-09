@@ -182,7 +182,7 @@ fn main() -> anyhow::Result<()> {
         }
         Err(e) => {
             error!("{}", e);
-            return Err(e);
+            Err(e)
         }
     }
 }
