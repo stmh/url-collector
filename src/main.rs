@@ -7,7 +7,6 @@ use std::io::Cursor;
 use rayon::prelude::*;
 use indicatif::ParallelProgressIterator;
 use rand::seq::IteratorRandom;
-use std::fs;
 use serde::{Serialize, Deserialize};
 
 type UrlVec  = Vec<UrlEntry>;
