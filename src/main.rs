@@ -1,16 +1,24 @@
 use simplelog::*;
 use sitemap::{reader::{SiteMapReader,SiteMapEntity}, structs::UrlEntry};
-use clap::Parser;
+use clap::{Parser};
 use anyhow::Result;
 use url::Url;
 use std::io::Cursor;
 use rayon::prelude::*;
 use indicatif::ParallelProgressIterator;
 use rand::seq::IteratorRandom;
-
+use std::fs;
+use serde::{Serialize, Deserialize};
 
 type UrlVec  = Vec<UrlEntry>;
 
+#[derive(clap::ValueEnum, Clone, Debug)]
+#[clap(rename_all = "kebab_case")]
+enum Output {
+    Terminal,
+    Json,
+    Yaml
+}
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -25,7 +33,10 @@ struct Args {
     num_threads: usize,
 
     #[arg(long, default_value_t=1000)]
-    num_urls: usize
+    num_urls: usize,
+
+    #[arg(long, value_enum, default_value="terminal")]
+    output: Output
 }
 
 fn validate_authentication(s: &str) -> Result<String, String> {
@@ -83,20 +94,42 @@ fn get_sitemap_content(url: Url) -> anyhow::Result<UrlVec> {
         }
     }
 
-    let subsitemaps: Vec<UrlVec> = sitemaps.par_iter()
+
+    let subsitemaps: Vec<anyhow::Result<UrlVec>> = sitemaps.par_iter()
         .progress_count(sitemaps.len() as u64)
         .filter_map(|sitemap_entry| {
-            let results = get_sitemap_content(sitemap_entry.loc.get_url().expect("Sitemap URL expected")).expect("Could not get sitemap");
+            let results = get_sitemap_content(sitemap_entry.loc.get_url().expect("Sitemap URL expected"));
             Some(results)
         })
         .collect();
 
-    for mut subsitemap in subsitemaps {
-        urls.append(&mut subsitemap);
+    for result in subsitemaps {
+        match result {
+            Ok(mut found_urls) => urls.append(&mut found_urls),
+            Err(e) => {
+                error!("{}", e)
+            }
+        }
     }
 
     info!("Collected {} urls!", urls.len());
     Ok(urls)
+}
+
+#[derive(Serialize, Deserialize)]
+struct ResultData {
+    num_results: usize,
+    urls: Vec<Url>
+}
+
+fn output_to_terminal(result: &ResultData) -> Result<()> {
+    println!("Collected {} urls", result.num_results);
+
+    for entry in &result.urls {
+        println!("{}", entry);
+    }
+
+    Ok(())
 }
 
 fn main() -> anyhow::Result<()> {
@@ -123,15 +156,19 @@ fn main() -> anyhow::Result<()> {
 
     match result {
         Ok(sitemap_content) => {
-            println!("Collected {} urls", &sitemap_content.len());
 
             let mut rng = rand::thread_rng();
             let subset: Vec<_> = sitemap_content.iter().choose_multiple(&mut rng, args.num_urls);
 
-            for entry in subset {
-                println!("{}", entry.loc.get_url().unwrap());
+            let result_data = ResultData {
+                num_results: sitemap_content.len(),
+                urls: subset.iter().map(|e| e.loc.get_url().unwrap()).collect()
+            };
+            match args.output {
+                Output::Terminal => output_to_terminal(&result_data),
+                Output::Json => output_to_json(&result_data),
+                Output::Yaml => output_to_yaml(&result_data),
             }
-            return Ok(());
         },
         Err(e) => {
             error!("{}", e);
@@ -139,4 +176,22 @@ fn main() -> anyhow::Result<()> {
         }
     }
 
+}
+
+
+fn output_to_yaml(result: &ResultData) -> Result<()> {
+    // Serialize the data structure into a YAML string.
+    let s = serde_yaml::to_string(&result).unwrap();
+
+    println!("{}", s);
+
+    Ok(())
+}
+
+fn output_to_json(result: &ResultData) -> Result<()> {
+    // Serialize the data structure into a JSON string.
+    let s = serde_json::to_string(&result).unwrap();
+
+    println!("{}", s);
+    Ok(())
 }
