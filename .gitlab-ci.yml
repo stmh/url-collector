@@ -1,0 +1,21 @@
+include:
+  - remote: https://config.factorial.io/gitlab-ci/defaults.yml
+
+
+build:
+  stage: build
+  tags:
+    - fabalicious
+  script:
+    - phab -cci script image:build -a user=gitlab-ci-token -a password=$CI_JOB_TOKEN --no-interaction
+  only:
+    - main
+
+build_tag:
+  stage: build
+  tags:
+    - fabalicious
+  script:
+    - phab -cci script image:build -a user=gitlab-ci-token -a password=$CI_JOB_TOKEN -a tag=$CI_COMMIT_REF_SLUG --no-interaction
+  only:
+    - tags
