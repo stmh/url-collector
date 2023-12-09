@@ -7,7 +7,7 @@ use std::io::Cursor;
 use rayon::prelude::*;
 use indicatif::ParallelProgressIterator;
 use rand::seq::IteratorRandom;
-use rand::Rng;
+
 
 type UrlVec  = Vec<UrlEntry>;
 
@@ -86,7 +86,7 @@ fn get_sitemap_content(url: Url) -> anyhow::Result<UrlVec> {
     let subsitemaps: Vec<UrlVec> = sitemaps.par_iter()
         .progress_count(sitemaps.len() as u64)
         .filter_map(|sitemap_entry| {
-            let mut results = get_sitemap_content(sitemap_entry.loc.get_url().expect("Sitemap URL expected")).expect("Could not get sitemap");
+            let results = get_sitemap_content(sitemap_entry.loc.get_url().expect("Sitemap URL expected")).expect("Could not get sitemap");
             Some(results)
         })
         .collect();
