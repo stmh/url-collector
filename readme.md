@@ -12,7 +12,7 @@ docker pull registry.factorial.io:8443/shuber/url-collector
 Or
 
 1. Make sure, you have the rust and cargo tooling installed
-2. Run `cargo install --git ssh://git@source.factorial.io:2222/shuber/url-collector.git
+2. Run `cargo install --git ssh://git@source.factorial.io:2222/shuber/url-collector.git`
 
 
 ## Usage
@@ -32,3 +32,10 @@ url-collector --url https://spiegel.de --num-url 10
 url-collector --url https://myprivatewebsite.org --authentication user:seCret --num-urls 100000 --output yaml
 ```
 
+If you use the prebuilt docker image, you need to prefix the command with 
+
+```
+docker run registry.factorial.io:8443/shuber/url-collector url-collector --url ...
+```
+
+Have fun
