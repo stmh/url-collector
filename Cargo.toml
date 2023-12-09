@@ -1,0 +1,20 @@
+[package]
+name = "url-collector"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+anyhow = "1.0.75"
+async-recursion = "1.0.5"
+clap = { version = "4.4.11", features = ["derive"] }
+futures = "0.3.29"
+indicatif = { version = "0.17.7", features = ["rayon"] }
+rand = "0.8.5"
+rayon = "1.8.0"
+reqwest = { version = "0.11.22", features = ["blocking"] }
+simplelog = { version = "0.12.1", features = ["paris"] }
+sitemap = "0.4.1"
+tokio = { version = "1.34.0", features = ["macros", "rt-multi-thread"] }
+url = "2.5.0"
