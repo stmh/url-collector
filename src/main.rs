@@ -50,7 +50,11 @@ fn validate_authentication(s: &str) -> Result<String, String> {
 }
 
 fn build_sitemap_url(args: &Args, sitemap_name: &str) -> anyhow::Result<Url> {
-    let base_url = Url::parse(&args.url).expect("Failed to parse base URL");
+    let mut url_str = args.url.clone();
+    if !url_str.ends_with('/') {
+        url_str.push('/');
+    }
+    let base_url = Url::parse(&url_str).expect("Failed to parse base URL");
 
     let mut full_url = base_url.join(sitemap_name).expect("Failed to join URL");
 
