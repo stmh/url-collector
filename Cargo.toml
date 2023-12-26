@@ -13,7 +13,7 @@ futures = "0.3.30"
 indicatif = { version = "0.17.7", features = ["rayon"] }
 rand = "0.8.5"
 rayon = "1.8.0"
-reqwest = { version = "0.11.22", features = ["blocking"] }
+reqwest = { version = "0.11.23", features = ["blocking"] }
 serde = { version = "1.0.193", features = ["derive"] }
 serde_json = { version = "1.0.108", features = [] }
 serde_yaml = "0.9.27"
