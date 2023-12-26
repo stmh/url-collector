@@ -41,6 +41,18 @@ struct Args {
     output: Output,
 }
 
+impl Default for Args {
+    fn default() -> Self {
+        Self {
+            url: "http://example.org".to_string(),
+            authentication: None,
+            num_threads: 1,
+            num_urls: 1000000,
+            output: Output::Terminal,
+        }
+    }
+}
+
 fn validate_authentication(s: &str) -> Result<String, String> {
     let v: Vec<&str> = s.split(':').collect();
     match v.len() == 2 {
@@ -206,4 +218,73 @@ fn output_to_json(result: &ResultData) -> Result<()> {
 
     println!("{}", s);
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::{build_sitemap_url, get_sitemap_content, Args};
+    use url::Url;
+
+    #[test]
+    fn test_sitemap_build_simple_url() {
+        let args = Args {
+            url: "https://www.mysite.org".to_string(),
+            ..Default::default()
+        };
+
+        let url = build_sitemap_url(&args, "sitemap.xml");
+
+        assert_eq!(url.unwrap().as_str(), "https://www.mysite.org/sitemap.xml");
+    }
+
+    #[test]
+    fn test_sitemap_build_authenticated_url() {
+        let args = Args {
+            url: "https://www.mysite.org".to_string(),
+            authentication: Some("user:$eCret".to_string()),
+            ..Default::default()
+        };
+
+        let url = build_sitemap_url(&args, "sitemap.xml");
+
+        assert_eq!(
+            url.unwrap().as_str(),
+            "https://user:$eCret@www.mysite.org/sitemap.xml"
+        );
+    }
+    #[test]
+    fn test_sitemap_build_url_with_path() {
+        let args = Args {
+            url: "https://www.mysite.org/en".to_string(),
+            ..Default::default()
+        };
+
+        let url = build_sitemap_url(&args, "sitemap.xml");
+
+        assert_eq!(
+            url.unwrap().as_str(),
+            "https://www.mysite.org/en/sitemap.xml"
+        );
+    }
+
+    #[test]
+    fn test_get_sitemap() {
+        let args = Args {
+            url: "https://www.factorial.io".to_string(),
+            ..Default::default()
+        };
+
+        let url = build_sitemap_url(&args, "sitemap.xml");
+        let urls = get_sitemap_content(url.unwrap()).unwrap();
+
+        let needles = vec!["https://www.factorial.io/de", "https://www.factorial.io/en"];
+
+        for needle in needles {
+            let found = urls.iter().any(|url| match &url.loc {
+                sitemap::structs::Location::Url(str) => str.to_string() == needle,
+                _ => false,
+            });
+            assert_eq!(found, true);
+        }
+    }
 }
