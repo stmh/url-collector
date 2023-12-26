@@ -223,7 +223,6 @@ fn output_to_json(result: &ResultData) -> Result<()> {
 #[cfg(test)]
 mod tests {
     use super::{build_sitemap_url, get_sitemap_content, Args};
-    use url::Url;
 
     #[test]
     fn test_sitemap_build_simple_url() {
