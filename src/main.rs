@@ -174,7 +174,7 @@ fn main() -> anyhow::Result<()> {
         urls: vec![],
     };
 
-    let _ = args.url.iter().for_each(|url| {
+    args.url.iter().for_each(|url| {
         info!("Collecting urls from {}!", url);
         match args.authentication {
             Some(ref str) => info!("using authentication {}", &str),
@@ -295,7 +295,7 @@ mod tests {
                 sitemap::structs::Location::Url(str) => str.to_string() == needle,
                 _ => false,
             });
-            assert_eq!(found, true);
+            assert!(found);
         }
     }
 }
