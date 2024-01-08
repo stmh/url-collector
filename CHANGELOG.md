@@ -2,9 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.11.1] - 2024-01-08
+
+[7a04616](7a04616cf4a500ef355975427642e20eac0bc6a9)...[65511f1](65511f1c9beb612b8cb59a0e399168d2150f5f61)
+
+### Bug Fixes
+
+- Tests ([71c3e96](71c3e9682344acc486dcebf643cda0e42f487299))
+
+### Miscellaneous Tasks
+
+- Fix formatting ([eaf1102](eaf1102aa824edd4920f54d4a776e0bf95068ef2))
+- Apply clippy suggestions ([65511f1](65511f1c9beb612b8cb59a0e399168d2150f5f61))
+
 ## [0.11.0] - 2024-01-08
 
-[410b932](410b9325b12c8d2816c2eb07b659d166f5aa58f8)...[dd4ef64](dd4ef64220f8b68cbe311aa92e950902a368af0e)
+[410b932](410b9325b12c8d2816c2eb07b659d166f5aa58f8)...[7a04616](7a04616cf4a500ef355975427642e20eac0bc6a9)
 
 ### Bug Fixes
 
@@ -28,6 +41,7 @@ All notable changes to this project will be documented in this file.
 
 - Enable tests in CI ([490e162](490e16235e4a4dd7f84eda06e9da13acc6e4252e))
 - Code cleanup ([9f8eaed](9f8eaed8490ea440ad4468ba467a7011095a1cbf))
+- Release url-collector version 0.11.0 ([7a04616](7a04616cf4a500ef355975427642e20eac0bc6a9))
 
 ### Testing
 

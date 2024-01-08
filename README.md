@@ -1,4 +1,4 @@
-# url collector (Current release: 0.11.0)
+# url collector (Current release: 0.11.1)
 
 a small cli utility that collects all urls from one (hierarchical) sitemap and offers a random selection of all urls. You can use JSON or YAML as output format
 
