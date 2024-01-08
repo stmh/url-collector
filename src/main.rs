@@ -174,36 +174,38 @@ fn main() -> anyhow::Result<()> {
         urls: vec![],
     };
 
-    let _ = args.url
-        .iter()
-        .for_each(|url| {
-            info!("Collecting urls from {}!", url);
-            match args.authentication {
-                Some(ref str) => info!("using authentication {}", &str),
-                None => info!("using no authentication"),
-            }
+    let _ = args.url.iter().for_each(|url| {
+        info!("Collecting urls from {}!", url);
+        match args.authentication {
+            Some(ref str) => info!("using authentication {}", &str),
+            None => info!("using no authentication"),
+        }
 
-            let sitemap_url = build_sitemap_url(&args, url, "sitemap.xml");
+        let sitemap_url = build_sitemap_url(&args, url, "sitemap.xml");
 
-            let result = get_sitemap_content(sitemap_url.expect("Could not create URL"));
+        let result = get_sitemap_content(sitemap_url.expect("Could not create URL"));
 
-            let _ = match result {
-                Ok(sitemap_content) => {
-                    let mut rng = rand::thread_rng();
-                    let subset: Vec<_> = sitemap_content
+        let _ = match result {
+            Ok(sitemap_content) => {
+                let mut rng = rand::thread_rng();
+                let subset: Vec<_> = sitemap_content
+                    .iter()
+                    .choose_multiple(&mut rng, args.num_urls);
+
+                overall_result_data.num_results += sitemap_content.len();
+                overall_result_data.urls.extend(
+                    subset
                         .iter()
-                        .choose_multiple(&mut rng, args.num_urls);
-
-                    overall_result_data.num_results += sitemap_content.len();
-                    overall_result_data.urls.extend(subset.iter().map(|e| e.loc.get_url().unwrap()).collect::<Vec<_>>());
-                    Ok(())
-                }
-                Err(e) => {
-                    error!("{}", e);
-                    Err(e)
-                }
-            };
-
+                        .map(|e| e.loc.get_url().unwrap())
+                        .collect::<Vec<_>>(),
+                );
+                Ok(())
+            }
+            Err(e) => {
+                error!("{}", e);
+                Err(e)
+            }
+        };
     });
 
     match args.output {
