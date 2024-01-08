@@ -239,11 +239,11 @@ mod tests {
     #[test]
     fn test_sitemap_build_simple_url() {
         let args = Args {
-            url: "https://www.mysite.org".to_string(),
+            url: vec!["https://www.mysite.org".to_string()],
             ..Default::default()
         };
 
-        let url = build_sitemap_url(&args, "sitemap.xml");
+        let url = build_sitemap_url(&args, &args.url[0], "sitemap.xml");
 
         assert_eq!(url.unwrap().as_str(), "https://www.mysite.org/sitemap.xml");
     }
@@ -251,12 +251,12 @@ mod tests {
     #[test]
     fn test_sitemap_build_authenticated_url() {
         let args = Args {
-            url: "https://www.mysite.org".to_string(),
+            url: vec!["https://www.mysite.org".to_string()],
             authentication: Some("user:$eCret".to_string()),
             ..Default::default()
         };
 
-        let url = build_sitemap_url(&args, "sitemap.xml");
+        let url = build_sitemap_url(&args, &args.url[0], "sitemap.xml");
 
         assert_eq!(
             url.unwrap().as_str(),
@@ -266,11 +266,11 @@ mod tests {
     #[test]
     fn test_sitemap_build_url_with_path() {
         let args = Args {
-            url: "https://www.mysite.org/en".to_string(),
+            url: vec!["https://www.mysite.org/en".to_string()],
             ..Default::default()
         };
 
-        let url = build_sitemap_url(&args, "sitemap.xml");
+        let url = build_sitemap_url(&args, &args.url[0], "sitemap.xml");
 
         assert_eq!(
             url.unwrap().as_str(),
@@ -281,11 +281,11 @@ mod tests {
     #[test]
     fn test_get_sitemap() {
         let args = Args {
-            url: "https://www.factorial.io".to_string(),
+            url: vec!["https://www.factorial.io".to_string()],
             ..Default::default()
         };
 
-        let url = build_sitemap_url(&args, "sitemap.xml");
+        let url = build_sitemap_url(&args, &args.url[0], "sitemap.xml");
         let urls = get_sitemap_content(url.unwrap()).unwrap();
 
         let needles = vec!["https://www.factorial.io/de", "https://www.factorial.io/en"];
