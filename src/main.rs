@@ -26,7 +26,7 @@ enum Output {
 #[command(author, version, about, long_about = None)]
 struct Args {
     #[arg(long)]
-    url: String,
+    url: Vec<String>,
 
     #[arg(long, value_parser = validate_authentication)]
     authentication: Option<String>,
@@ -44,7 +44,7 @@ struct Args {
 impl Default for Args {
     fn default() -> Self {
         Self {
-            url: "http://example.org".to_string(),
+            url: vec!["http://example.org".to_string()],
             authentication: None,
             num_threads: 1,
             num_urls: 1000000,
@@ -61,8 +61,8 @@ fn validate_authentication(s: &str) -> Result<String, String> {
     }
 }
 
-fn build_sitemap_url(args: &Args, sitemap_name: &str) -> anyhow::Result<Url> {
-    let mut url_str = args.url.clone();
+fn build_sitemap_url(args: &Args, url: &str, sitemap_name: &str) -> anyhow::Result<Url> {
+    let mut url_str = url.to_string();
     if !url_str.ends_with('/') {
         url_str.push('/');
     }
@@ -169,37 +169,47 @@ fn main() -> anyhow::Result<()> {
         .build_global()
         .unwrap();
 
-    info!("Collecting urls from {}!", args.url);
-    match args.authentication {
-        Some(ref str) => info!("using authentication {}", &str),
-        None => info!("using no authentication"),
-    }
+    let mut overall_result_data = ResultData {
+        num_results: 0,
+        urls: vec![],
+    };
 
-    let sitemap_url = build_sitemap_url(&args, "sitemap.xml");
-
-    let result = get_sitemap_content(sitemap_url.expect("Could not create URL"));
-
-    match result {
-        Ok(sitemap_content) => {
-            let mut rng = rand::thread_rng();
-            let subset: Vec<_> = sitemap_content
-                .iter()
-                .choose_multiple(&mut rng, args.num_urls);
-
-            let result_data = ResultData {
-                num_results: sitemap_content.len(),
-                urls: subset.iter().map(|e| e.loc.get_url().unwrap()).collect(),
-            };
-            match args.output {
-                Output::Terminal => output_to_terminal(&result_data),
-                Output::Json => output_to_json(&result_data),
-                Output::Yaml => output_to_yaml(&result_data),
+    let _ = args.url
+        .iter()
+        .for_each(|url| {
+            info!("Collecting urls from {}!", url);
+            match args.authentication {
+                Some(ref str) => info!("using authentication {}", &str),
+                None => info!("using no authentication"),
             }
-        }
-        Err(e) => {
-            error!("{}", e);
-            Err(e)
-        }
+
+            let sitemap_url = build_sitemap_url(&args, url, "sitemap.xml");
+
+            let result = get_sitemap_content(sitemap_url.expect("Could not create URL"));
+
+            let _ = match result {
+                Ok(sitemap_content) => {
+                    let mut rng = rand::thread_rng();
+                    let subset: Vec<_> = sitemap_content
+                        .iter()
+                        .choose_multiple(&mut rng, args.num_urls);
+
+                    overall_result_data.num_results += sitemap_content.len();
+                    overall_result_data.urls.extend(subset.iter().map(|e| e.loc.get_url().unwrap()).collect::<Vec<_>>());
+                    Ok(())
+                }
+                Err(e) => {
+                    error!("{}", e);
+                    Err(e)
+                }
+            };
+
+    });
+
+    match args.output {
+        Output::Terminal => output_to_terminal(&overall_result_data),
+        Output::Json => output_to_json(&overall_result_data),
+        Output::Yaml => output_to_yaml(&overall_result_data),
     }
 }
 
