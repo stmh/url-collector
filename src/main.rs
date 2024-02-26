@@ -74,7 +74,6 @@ fn build_sitemap_url(url: &str, sitemap_name: &str) -> anyhow::Result<Url> {
 }
 
 fn apply_basic_authentication(args: &Args, url: &Url) -> anyhow::Result<Url> {
-
     let mut full_url = url.clone();
     if let Some(ref s) = &args.authentication {
         let v: Vec<&str> = s.split(':').collect();
@@ -125,8 +124,10 @@ fn get_sitemap_content(args: &Args, url: Url) -> anyhow::Result<UrlVec> {
         .par_iter()
         .progress_count(sitemaps.len() as u64)
         .filter_map(|sitemap_entry| {
-            let results =
-                get_sitemap_content(&args, sitemap_entry.loc.get_url().expect("Sitemap URL expected"));
+            let results = get_sitemap_content(
+                args,
+                sitemap_entry.loc.get_url().expect("Sitemap URL expected"),
+            );
             Some(results)
         })
         .collect();
@@ -241,7 +242,7 @@ fn output_to_json(result: &ResultData) -> Result<()> {
 
 #[cfg(test)]
 mod tests {
-    use super::{build_sitemap_url, get_sitemap_content, Args, apply_basic_authentication};
+    use super::{apply_basic_authentication, build_sitemap_url, get_sitemap_content, Args};
 
     #[test]
     fn test_sitemap_build_simple_url() {
