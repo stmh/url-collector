@@ -61,15 +61,21 @@ fn validate_authentication(s: &str) -> Result<String, String> {
     }
 }
 
-fn build_sitemap_url(args: &Args, url: &str, sitemap_name: &str) -> anyhow::Result<Url> {
+fn build_sitemap_url(url: &str, sitemap_name: &str) -> anyhow::Result<Url> {
     let mut url_str = url.to_string();
     if !url_str.ends_with('/') {
         url_str.push('/');
     }
     let base_url = Url::parse(&url_str).expect("Failed to parse base URL");
 
-    let mut full_url = base_url.join(sitemap_name).expect("Failed to join URL");
+    let full_url = base_url.join(sitemap_name).expect("Failed to join URL");
 
+    Ok(full_url)
+}
+
+fn apply_basic_authentication(args: &Args, url: &Url) -> anyhow::Result<Url> {
+
+    let mut full_url = url.clone();
     if let Some(ref s) = &args.authentication {
         let v: Vec<&str> = s.split(':').collect();
 
@@ -84,7 +90,8 @@ fn build_sitemap_url(args: &Args, url: &str, sitemap_name: &str) -> anyhow::Resu
     Ok(full_url)
 }
 
-fn get_sitemap_content(url: Url) -> anyhow::Result<UrlVec> {
+fn get_sitemap_content(args: &Args, url: Url) -> anyhow::Result<UrlVec> {
+    let url = apply_basic_authentication(args, &url)?;
     info!("Getting sitemap from {}", url);
 
     let body = reqwest::blocking::get(url)?.text();
@@ -119,7 +126,7 @@ fn get_sitemap_content(url: Url) -> anyhow::Result<UrlVec> {
         .progress_count(sitemaps.len() as u64)
         .filter_map(|sitemap_entry| {
             let results =
-                get_sitemap_content(sitemap_entry.loc.get_url().expect("Sitemap URL expected"));
+                get_sitemap_content(&args, sitemap_entry.loc.get_url().expect("Sitemap URL expected"));
             Some(results)
         })
         .collect();
@@ -181,9 +188,9 @@ fn main() -> anyhow::Result<()> {
             None => info!("using no authentication"),
         }
 
-        let sitemap_url = build_sitemap_url(&args, url, "sitemap.xml");
+        let sitemap_url = build_sitemap_url(url, "sitemap.xml");
 
-        let result = get_sitemap_content(sitemap_url.expect("Could not create URL"));
+        let result = get_sitemap_content(&args, sitemap_url.expect("Could not create URL"));
 
         let _ = match result {
             Ok(sitemap_content) => {
@@ -234,7 +241,7 @@ fn output_to_json(result: &ResultData) -> Result<()> {
 
 #[cfg(test)]
 mod tests {
-    use super::{build_sitemap_url, get_sitemap_content, Args};
+    use super::{build_sitemap_url, get_sitemap_content, Args, apply_basic_authentication};
 
     #[test]
     fn test_sitemap_build_simple_url() {
@@ -243,7 +250,7 @@ mod tests {
             ..Default::default()
         };
 
-        let url = build_sitemap_url(&args, &args.url[0], "sitemap.xml");
+        let url = build_sitemap_url(&args.url[0], "sitemap.xml");
 
         assert_eq!(url.unwrap().as_str(), "https://www.mysite.org/sitemap.xml");
     }
@@ -256,8 +263,8 @@ mod tests {
             ..Default::default()
         };
 
-        let url = build_sitemap_url(&args, &args.url[0], "sitemap.xml");
-
+        let url = build_sitemap_url(&args.url[0], "sitemap.xml");
+        let url = apply_basic_authentication(&args, &url.unwrap());
         assert_eq!(
             url.unwrap().as_str(),
             "https://user:$eCret@www.mysite.org/sitemap.xml"
@@ -270,7 +277,7 @@ mod tests {
             ..Default::default()
         };
 
-        let url = build_sitemap_url(&args, &args.url[0], "sitemap.xml");
+        let url = build_sitemap_url(&args.url[0], "sitemap.xml");
 
         assert_eq!(
             url.unwrap().as_str(),
@@ -285,8 +292,8 @@ mod tests {
             ..Default::default()
         };
 
-        let url = build_sitemap_url(&args, &args.url[0], "sitemap.xml");
-        let urls = get_sitemap_content(url.unwrap()).unwrap();
+        let url = build_sitemap_url(&args.url[0], "sitemap.xml");
+        let urls = get_sitemap_content(&args, url.unwrap()).unwrap();
 
         let needles = vec!["https://www.factorial.io/de", "https://www.factorial.io/en"];
 
