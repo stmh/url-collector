@@ -8,7 +8,7 @@ publish = false
 
 [dependencies]
 anyhow = "1.0.81"
-async-recursion = "1.0.5"
+async-recursion = "1.1.0"
 clap = { version = "4.5.3", features = ["derive"] }
 futures = "0.3.30"
 indicatif = { version = "0.17.8", features = ["rayon"] }
