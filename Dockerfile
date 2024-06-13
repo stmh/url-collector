@@ -1,10 +1,10 @@
-FROM rust:1.78 as builder
+FROM rust:1.79 as builder
 
 WORKDIR ./app
 ADD . ./
 RUN cargo build --release
 
-FROM rust:1.78
+FROM rust:1.79
 
 # copy the build artifact from the build stage
 COPY --from=builder /app/target/release/url-collector /usr/local/bin
