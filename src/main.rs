@@ -225,7 +225,7 @@ fn main() -> anyhow::Result<()> {
 
 fn output_to_yaml(result: &ResultData) -> Result<()> {
     // Serialize the data structure into a YAML string.
-    let s = serde_yaml::to_string(&result).unwrap();
+    let s = serde_yml::to_string(&result).unwrap();
 
     println!("{}", s);
 
