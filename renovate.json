@@ -1,5 +1,28 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "labels": ["dependencies", "renovate"],
+  "packageRules": [
+    {
+      "matchManagers": ["cargo"],
+      "addLabels": ["rust"]
+    },
+    {
+      "packagePatterns": ["^serde[-_]?"],
+      "groupName": "serde packages"
+    },
+    {
+      "packagePatterns": ["^tokio[-_]?"],
+      "groupName": "tokio packages"
+    },
+    {
+      "matchManagers": ["cargo"],
+      "automerge": true,
+      "platformAutomerge": true,
+      "gitLabIgnoreApprovals": true,
+      "updateTypes": ["patch"],
+      "groupName": "Rust dependencies auto-merge (patch)"
+    }
+  ],
   "extends": [
     "config:recommended"
   ]
