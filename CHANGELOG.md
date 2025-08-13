@@ -2,7 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.11.6] - 2025-08-13
+
+### Other (unconventional)
+
+- Fix macOS Intel build by using native runner ✔️
+
 ## [0.11.5] - 2025-08-13
+
+### Miscellaneous Tasks
+
+- Release url-collector version 0.11.5 ✔️
 
 ### Other (unconventional)
 
