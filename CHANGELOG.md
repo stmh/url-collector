@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.11.4] - 2025-08-13
+
+### Documentation
+
+- Add release process documentation and sponsor acknowledgment ✔️
+
+### Other (unconventional)
+
+- Update workflow to use modern rust-toolchain action ✔️
+
 ## [0.11.3] - 2025-08-13
 
 ### Bug Fixes
@@ -138,6 +148,7 @@ All notable changes to this project will be documented in this file.
 - Update rust docker tag to v1.83 ✔️
 - Update rust docker tag to v1.85 ✔️
 - Update rust docker tag to v1.86 ✔️
+- Release url-collector version 0.11.3 ✔️
 
 ### Other (unconventional)
 
