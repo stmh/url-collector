@@ -2,11 +2,22 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.11.5] - 2025-08-13
+
+### Other (unconventional)
+
+- Update all cargo dependencies ✔️
+- Use stable Rust toolchain for release builds ✔️
+
 ## [0.11.4] - 2025-08-13
 
 ### Documentation
 
 - Add release process documentation and sponsor acknowledgment ✔️
+
+### Miscellaneous Tasks
+
+- Release url-collector version 0.11.4 ✔️
 
 ### Other (unconventional)
 
