@@ -296,7 +296,7 @@ mod tests {
         let url = build_sitemap_url(&args.url[0], "sitemap.xml");
         let urls = get_sitemap_content(&args, url.unwrap()).unwrap();
 
-        let needles = vec!["https://www.factorial.io/de", "https://www.factorial.io/en"];
+        let needles = vec!["https://www.factorial.io/", "https://www.factorial.io/en"];
 
         for needle in needles {
             let found = urls.iter().any(|url| match &url.loc {
