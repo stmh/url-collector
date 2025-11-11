@@ -44,7 +44,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   macos-arm-release:
     name: release mac os arm release
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@master
       - name: check toolchain
@@ -64,7 +64,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   macos-intel-release:
     name: release mac os intel release
-    runs-on: macos-13
+    runs-on: macos-15
     steps:
       - uses: actions/checkout@master
       - name: check toolchain
