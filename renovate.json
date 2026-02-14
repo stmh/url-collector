@@ -19,7 +19,7 @@
       "automerge": true,
       "platformAutomerge": true,
       "gitLabIgnoreApprovals": true,
-      "updateTypes": ["patch"],
+      "matchUpdateTypes": ["patch"],
       "groupName": "Rust dependencies auto-merge (patch)"
     }
   ],
