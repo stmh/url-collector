@@ -195,10 +195,8 @@ fn main() -> anyhow::Result<()> {
 
         let _ = match result {
             Ok(sitemap_content) => {
-                let mut rng = rand::thread_rng();
-                let subset: Vec<_> = sitemap_content
-                    .iter()
-                    .choose_multiple(&mut rng, args.num_urls);
+                let mut rng = rand::rng();
+                let subset: Vec<_> = sitemap_content.iter().sample(&mut rng, args.num_urls);
 
                 overall_result_data.num_results += sitemap_content.len();
                 overall_result_data.urls.extend(
